@@ -81,6 +81,7 @@ class SandboxExecutor:
         timeout: int = 30,
         on_stdout: Optional[Callable[[str], None]] = None,
         on_stderr: Optional[Callable[[str], None]] = None,
+        stream: bool = True,
     ) -> CommandResult:
         """
         Execute a command in a shell synchronously. Supports streaming output via callbacks.
@@ -111,8 +112,7 @@ class SandboxExecutor:
         """
         start_time = time.time()
 
-        # Use streaming if callbacks are provided
-        if on_stdout or on_stderr:
+        if stream:
             stdout_buffer = []
             stderr_buffer = []
             exit_code = 0
@@ -200,6 +200,7 @@ class AsyncSandboxExecutor(SandboxExecutor):
         timeout: int = 30,
         on_stdout: Optional[Callable[[str], None]] = None,
         on_stderr: Optional[Callable[[str], None]] = None,
+        stream: bool = True,
     ) -> CommandResult:
         """
         Execute a command in a shell asynchronously. Supports streaming output via callbacks.
@@ -230,8 +231,7 @@ class AsyncSandboxExecutor(SandboxExecutor):
         """
         start_time = time.time()
 
-        # Use streaming if callbacks are provided
-        if on_stdout or on_stderr:
+        if stream:
             stdout_buffer: List[str] = []
             stderr_buffer: List[str] = []
             exit_code = 0
