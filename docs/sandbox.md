@@ -96,13 +96,13 @@ For async usage, use AsyncSandboxExecutor instead.
 #### \_\_call\_\_
 
 ```python
-def __call__(
-        command: str,
-        cwd: Optional[str] = None,
-        env: Optional[Dict[str, str]] = None,
-        timeout: int = 30,
-        on_stdout: Optional[Callable[[str], None]] = None,
-        on_stderr: Optional[Callable[[str], None]] = None) -> CommandResult
+def __call__(command: str,
+             cwd: Optional[str] = None,
+             env: Optional[Dict[str, str]] = None,
+             timeout: int = 30,
+             on_stdout: Optional[Callable[[str], None]] = None,
+             on_stderr: Optional[Callable[[str], None]] = None,
+             stream: bool = True) -> CommandResult
 ```
 
 Execute a command in a shell synchronously. Supports streaming output via callbacks.
@@ -155,13 +155,13 @@ using native async I/O via AsyncSandboxClient.
 #### \_\_call\_\_
 
 ```python
-async def __call__(
-        command: str,
-        cwd: Optional[str] = None,
-        env: Optional[Dict[str, str]] = None,
-        timeout: int = 30,
-        on_stdout: Optional[Callable[[str], None]] = None,
-        on_stderr: Optional[Callable[[str], None]] = None) -> CommandResult
+async def __call__(command: str,
+                   cwd: Optional[str] = None,
+                   env: Optional[Dict[str, str]] = None,
+                   timeout: int = 30,
+                   on_stdout: Optional[Callable[[str], None]] = None,
+                   on_stderr: Optional[Callable[[str], None]] = None,
+                   stream: bool = True) -> CommandResult
 ```
 
 Execute a command in a shell asynchronously. Supports streaming output via callbacks.
@@ -2247,6 +2247,16 @@ class SandboxDeploymentError(SandboxError)
 ```
 
 Raised when a sandbox deployment reaches an error state
+
+<a id="koyeb/sandbox.utils.SandboxServiceError"></a>
+
+## SandboxServiceError Objects
+
+```python
+class SandboxServiceError(SandboxError)
+```
+
+Raised when the sandbox executor returns an HTTP 5xx error
 
 <a id="koyeb/sandbox.executor_client"></a>
 
