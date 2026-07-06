@@ -9,6 +9,8 @@ DOCKER ?= docker
 
 .PHONY: gen-api-client
 gen-api-client: fetch-spec gen-api-client-sync gen-api-client-async
+	# Apply manual patches after code generation
+	./scripts/apply_patches.sh
 
 .PHONY: gen-api-client-sync
 gen-api-client-sync:
