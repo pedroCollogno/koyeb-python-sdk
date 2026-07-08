@@ -549,7 +549,7 @@ def build_network_policy(
     outbound_allowlist: Optional[List[str]] = None,
 ) -> Optional[NetworkPolicy]:
     """
-    Build a NetworkPolicy from sandbox egress arguments.
+    Build a NetworkPolicy from sandbox network policy arguments.
 
     Args:
         block_network: If True, block all outbound network access

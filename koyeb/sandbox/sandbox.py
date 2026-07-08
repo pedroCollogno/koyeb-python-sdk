@@ -1130,7 +1130,7 @@ class Sandbox:
         outbound_allowlist: Optional[List[str]] = None,
     ) -> None:
         """
-        Update the sandbox's egress network policy.
+        Update the sandbox's network policy.
 
         Warning: applying a new network policy triggers a redeployment of the
         sandbox service. The sandbox is restarted and any in-memory or
@@ -1143,13 +1143,13 @@ class Sandbox:
                 all other outbound traffic is blocked. Bare IPs are normalized to
                 /32 (IPv4) or /128 (IPv6). Mutually exclusive with block_network.
 
-        With both arguments unset, the egress policy is reset to the
+        With both arguments unset, the network policy is reset to the
         platform default (unrestricted outbound access).
 
         Raises:
             EgressPolicyError: If both block_network and outbound_allowlist are
                 passed, or an allowlist entry is not a valid IP address or CIDR
-            SandboxError: If updating the egress policy fails
+            SandboxError: If updating the network policy fails
 
         Example:
             >>> sandbox.update_network_policy(block_network=True)
@@ -1184,7 +1184,7 @@ class Sandbox:
         except Exception as e:
             if isinstance(e, SandboxError):
                 raise
-            raise SandboxError(f"Failed to update egress policy: {str(e)}")
+            raise SandboxError(f"Failed to update network policy: {str(e)}")
 
     def __enter__(self) -> "Sandbox":
         """Context manager entry - returns self."""
@@ -1421,7 +1421,7 @@ class AsyncSandbox(Sandbox):
         from koyeb.api_async.models.create_service import CreateService as AsyncCreateService
         from koyeb.api_async.models.create_service import ServiceLifeCycle as AsyncServiceLifeCycle
 
-        # Build network policy from egress policy parameters. Validate before
+        # Build the network policy from the provided parameters. Validate before
         # any API call so invalid input fails fast without orphaning an app.
         network_policy = build_network_policy(block_network, outbound_allowlist)
 
@@ -1826,7 +1826,7 @@ class AsyncSandbox(Sandbox):
         block_network: bool = False,
         outbound_allowlist: Optional[List[str]] = None,
     ) -> None:
-        """Update the sandbox's egress network policy asynchronously.
+        """Update the sandbox's network policy asynchronously.
 
         Warning: applying a new network policy triggers a redeployment of the
         sandbox service. The sandbox is restarted and any in-memory or
@@ -1838,7 +1838,7 @@ class AsyncSandbox(Sandbox):
         Raises:
             EgressPolicyError: If both block_network and outbound_allowlist are
                 passed, or an allowlist entry is not a valid IP address or CIDR
-            SandboxError: If updating the egress policy fails
+            SandboxError: If updating the network policy fails
         """
         from .utils import get_async_api_clients, build_network_policy
         from koyeb.api_async.models.network_policy import NetworkPolicy as AsyncNetworkPolicy
@@ -1879,7 +1879,7 @@ class AsyncSandbox(Sandbox):
         except Exception as e:
             if isinstance(e, SandboxError):
                 raise
-            raise SandboxError(f"Failed to update egress policy: {str(e)}") from e
+            raise SandboxError(f"Failed to update network policy: {str(e)}") from e
 
     async def __aenter__(self) -> "AsyncSandbox":
         """Async context manager entry - returns self."""

@@ -1544,7 +1544,7 @@ def update_network_policy(
         outbound_allowlist: Optional[List[str]] = None) -> None
 ```
 
-Update the sandbox's egress network policy.
+Update the sandbox's network policy.
 
 Warning: applying a new network policy triggers a redeployment of the
 sandbox service. The sandbox is restarted and any in-memory or
@@ -1558,7 +1558,7 @@ redeployment to finish.
   all other outbound traffic is blocked. Bare IPs are normalized to
   /32 (IPv4) or /128 (IPv6). Mutually exclusive with block_network.
   
-  With both arguments unset, the egress policy is reset to the
+  With both arguments unset, the network policy is reset to the
   platform default (unrestricted outbound access).
   
 
@@ -1566,7 +1566,7 @@ redeployment to finish.
 
 - `EgressPolicyError` - If both block_network and outbound_allowlist are
   passed, or an allowlist entry is not a valid IP address or CIDR
-- `SandboxError` - If updating the egress policy fails
+- `SandboxError` - If updating the network policy fails
   
 
 **Example**:
@@ -1910,7 +1910,7 @@ async def update_network_policy(
         outbound_allowlist: Optional[List[str]] = None) -> None
 ```
 
-Update the sandbox's egress network policy asynchronously.
+Update the sandbox's network policy asynchronously.
 
 Warning: applying a new network policy triggers a redeployment of the
 sandbox service. The sandbox is restarted and any in-memory or
@@ -1923,7 +1923,7 @@ See Sandbox.update_network_policy for full documentation.
 
 - `EgressPolicyError` - If both block_network and outbound_allowlist are
   passed, or an allowlist entry is not a valid IP address or CIDR
-- `SandboxError` - If updating the egress policy fails
+- `SandboxError` - If updating the network policy fails
 
 <a id="koyeb/sandbox.sandbox.AsyncSandbox.__aenter__"></a>
 
@@ -2247,7 +2247,7 @@ def build_network_policy(
 ) -> Optional[NetworkPolicy]
 ```
 
-Build a NetworkPolicy from sandbox egress arguments.
+Build a NetworkPolicy from sandbox network policy arguments.
 
 **Arguments**:
 
