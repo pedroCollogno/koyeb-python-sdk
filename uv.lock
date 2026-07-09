@@ -7,7 +7,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-07-05T19:43:52.954684Z"
+exclude-newer = "2026-07-07T09:56:22.029973Z"
 exclude-newer-span = "P2D"
 
 [[package]]
@@ -468,7 +468,7 @@ wheels = [
 
 [[package]]
 name = "koyeb-sdk"
-version = "1.5.1"
+version = "1.5.2"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
