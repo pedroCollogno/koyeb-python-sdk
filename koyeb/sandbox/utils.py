@@ -21,7 +21,6 @@ from koyeb.api.api import (
     InstanceSnapshotsApi,
     SecretsApi,
     ServicesApi,
-    SnapshotsApi,
 )
 from koyeb.api.models.config_file import ConfigFile
 from koyeb.api.models.deployment_definition import DeploymentDefinition
@@ -109,7 +108,6 @@ class ApiClients:
     catalog_instances: CatalogInstancesApi
     deployments: DeploymentsApi
     secrets: SecretsApi
-    snapshots: Any
     instance_snapshots: Any
 
 
@@ -160,7 +158,6 @@ def get_api_clients(
         catalog_instances=CatalogInstancesApi(api_client),
         deployments=DeploymentsApi(api_client),
         secrets=SecretsApi(api_client),
-        snapshots=SnapshotsApi(api_client),
         instance_snapshots=InstanceSnapshotsApi(api_client),
     )
     _api_clients_cache[cache_key] = clients
@@ -179,7 +176,6 @@ from koyeb.api_async.api import (
     InstanceSnapshotsApi as AsyncInstanceSnapshotsApi,
     SecretsApi as AsyncSecretsApi,
     ServicesApi as AsyncServicesApi,
-    SnapshotsApi as AsyncSnapshotsApi,
 )
 
 
@@ -193,7 +189,6 @@ class AsyncApiClients:
     catalog_instances: AsyncCatalogInstancesApi
     deployments: AsyncDeploymentsApi
     secrets: AsyncSecretsApi
-    snapshots: Any
     instance_snapshots: Any
 
 
@@ -244,7 +239,6 @@ def get_async_api_clients(
         catalog_instances=AsyncCatalogInstancesApi(api_client),
         deployments=AsyncDeploymentsApi(api_client),
         secrets=AsyncSecretsApi(api_client),
-        snapshots=AsyncSnapshotsApi(api_client),
         instance_snapshots=AsyncInstanceSnapshotsApi(api_client),
     )
     _async_api_clients_cache[cache_key] = clients
