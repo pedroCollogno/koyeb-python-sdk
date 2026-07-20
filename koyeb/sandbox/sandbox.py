@@ -11,7 +11,6 @@ import os
 import secrets
 import time
 from dataclasses import dataclass
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from koyeb.api.api.deployments_api import DeploymentsApi
@@ -248,30 +247,31 @@ class Sandbox:
         if snapshot is not None:
             if isinstance(snapshot, str):
                 # snapshot is a snapshot ID or name string
-                from .snapshot import Snapshot
+                from .snapshot import Snapshot, SnapshotType
                 
                 # Try to get snapshot by ID first (fast path for UUIDs)
                 try:
                     snapshot_obj = Snapshot.get(snapshot, api_token=api_token, host=host)
                     actual_snapshot_id = snapshot_obj.id
                     actual_snapshot_type = snapshot_obj.snapshot_type
-                except Exception:
+                except SandboxError:
                     # If that fails, try to find by name
                     try:
-                        snapshots = Snapshot.list(api_token=api_token, host=host, limit=100)
+                        snapshots = Snapshot.list(
+                            api_token=api_token, host=host, limit=100
+                        )
                         for s in snapshots:
                             if s.name == snapshot:
                                 actual_snapshot_id = s.id
                                 actual_snapshot_type = s.snapshot_type
                                 break
-                    except Exception:
+                    except SandboxError:
                         pass
                     
                     # If we couldn't resolve it, use the string as-is
                     # Default to FILESYSTEM type if we couldn't determine it
                     if actual_snapshot_id is None:
                         actual_snapshot_id = snapshot
-                        from .snapshot import SnapshotType
                         actual_snapshot_type = SnapshotType.FILESYSTEM
             else:
                 # snapshot is a Snapshot object
@@ -419,6 +419,30 @@ class Sandbox:
             delete_after_sleep=delete_after_inactivity_delay,
         )
         
+        # Build deployment definition - used for both snapshot and non-snapshot cases
+        env_vars = build_env_vars(env)
+        config_file_objects = build_config_files(config_files)
+        docker_source = create_docker_source(
+            image, privileged=privileged, image_registry_secret=registry_secret,
+            entrypoint=entrypoint, command=command, args=args,
+        )
+        deployment_definition = create_deployment_definition(
+            name=name,
+            docker_source=docker_source,
+            env_vars=env_vars,
+            instance_type=instance_type,
+            exposed_port_protocol=exposed_port_protocol,
+            region=region,
+            routes=routes,
+            idle_timeout=idle_timeout,
+            enable_tcp_proxy=enable_tcp_proxy,
+            _experimental_enable_light_sleep=_experimental_enable_light_sleep,
+            _experimental_deep_sleep_value=_experimental_deep_sleep_value,
+            enable_mesh=enable_mesh,
+            config_files=config_file_objects if config_file_objects else None,
+            network_policy=network_policy,
+        )
+        
         # Handle snapshot creation based on snapshot type
         # For FULL snapshots, don't provide definition (API will infer it)
         # For FILESYSTEM snapshots, always provide definition with snapshot_id
@@ -427,7 +451,7 @@ class Sandbox:
             from .snapshot import SnapshotType as ST
             
             # For FULL snapshots, create service without definition
-            if snapshot_type == ST.FULL and snapshot_type is not None:
+            if snapshot_type == ST.FULL:
                 create_service = CreateService(
                     app_id=app_id,
                     life_cycle=service_life_cycle,
@@ -436,28 +460,6 @@ class Sandbox:
                 )
             else:
                 # For FILESYSTEM snapshots (or unknown), provide definition
-                env_vars = build_env_vars(env)
-                config_file_objects = build_config_files(config_files)
-                docker_source = create_docker_source(
-                    image, privileged=privileged, image_registry_secret=registry_secret,
-                    entrypoint=entrypoint, command=command, args=args,
-                )
-                deployment_definition = create_deployment_definition(
-                    name=name,
-                    docker_source=docker_source,
-                    env_vars=env_vars,
-                    instance_type=instance_type,
-                    exposed_port_protocol=exposed_port_protocol,
-                    region=region,
-                    routes=routes,
-                    idle_timeout=idle_timeout,
-                    enable_tcp_proxy=enable_tcp_proxy,
-                    _experimental_enable_light_sleep=_experimental_enable_light_sleep,
-                    _experimental_deep_sleep_value=_experimental_deep_sleep_value,
-                    enable_mesh=enable_mesh,
-                    config_files=config_file_objects if config_file_objects else None,
-                    network_policy=network_policy,
-                )
                 create_service = CreateService(
                     app_id=app_id,
                     definition=deployment_definition,
@@ -467,28 +469,6 @@ class Sandbox:
                 )
         else:
             # No snapshot, create normally with definition
-            env_vars = build_env_vars(env)
-            config_file_objects = build_config_files(config_files)
-            docker_source = create_docker_source(
-                image, privileged=privileged, image_registry_secret=registry_secret,
-                entrypoint=entrypoint, command=command, args=args,
-            )
-            deployment_definition = create_deployment_definition(
-                name=name,
-                docker_source=docker_source,
-                env_vars=env_vars,
-                instance_type=instance_type,
-                exposed_port_protocol=exposed_port_protocol,
-                region=region,
-                routes=routes,
-                idle_timeout=idle_timeout,
-                enable_tcp_proxy=enable_tcp_proxy,
-                _experimental_enable_light_sleep=_experimental_enable_light_sleep,
-                _experimental_deep_sleep_value=_experimental_deep_sleep_value,
-                enable_mesh=enable_mesh,
-                config_files=config_file_objects if config_file_objects else None,
-                network_policy=network_policy,
-            )
             create_service = CreateService(
                 app_id=app_id,
                 definition=deployment_definition,
@@ -1753,30 +1733,31 @@ class AsyncSandbox(Sandbox):
         if snapshot is not None:
             if isinstance(snapshot, str):
                 # snapshot is a snapshot ID or name string
-                from .snapshot import Snapshot
+                from .snapshot import Snapshot, SnapshotType
                 
                 # Try to get snapshot by ID first (fast path for UUIDs)
                 try:
                     snapshot_obj = Snapshot.get(snapshot, api_token=api_token, host=host)
                     actual_snapshot_id = snapshot_obj.id
                     actual_snapshot_type = snapshot_obj.snapshot_type
-                except Exception:
+                except SandboxError:
                     # If that fails, try to find by name
                     try:
-                        snapshots = Snapshot.list(api_token=api_token, host=host, limit=100)
+                        snapshots = Snapshot.list(
+                            api_token=api_token, host=host, limit=100
+                        )
                         for s in snapshots:
                             if s.name == snapshot:
                                 actual_snapshot_id = s.id
                                 actual_snapshot_type = s.snapshot_type
                                 break
-                    except Exception:
+                    except SandboxError:
                         pass
                     
                     # If we couldn't resolve it, use the string as-is
                     # Default to FILESYSTEM type if we couldn't determine it
                     if actual_snapshot_id is None:
                         actual_snapshot_id = snapshot
-                        from .snapshot import SnapshotType
                         actual_snapshot_type = SnapshotType.FILESYSTEM
             else:
                 # snapshot is a Snapshot object

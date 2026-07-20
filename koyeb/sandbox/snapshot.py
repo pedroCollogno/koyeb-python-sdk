@@ -191,46 +191,6 @@ class Snapshot:
             raise SandboxError(f"Failed to list snapshots: {e}") from e
 
     @classmethod
-    def _from_api_snapshot(
-        cls,
-        api_snapshot: Any,
-        api_token: Optional[str],
-        host: Optional[str],
-    ) -> Snapshot:
-        """Convert API snapshot model to Snapshot object."""
-        snapshot_type = SnapshotType.FILESYSTEM
-        if api_snapshot.type and api_snapshot.type.value:
-            try:
-                snapshot_type = SnapshotType(api_snapshot.type.value)
-            except ValueError:
-                snapshot_type = SnapshotType.FILESYSTEM
-
-        status = SnapshotStatus.INVALID
-        if api_snapshot.status and api_snapshot.status.value:
-            try:
-                status = SnapshotStatus(api_snapshot.status.value)
-            except ValueError:
-                status = SnapshotStatus.INVALID
-
-        return cls(
-            id=api_snapshot.id or "",
-            name=api_snapshot.name or "",
-            service_id=api_snapshot.service_id or "",
-            snapshot_type=snapshot_type,
-            status=status,
-            created_at=api_snapshot.created_at or datetime.utcnow(),
-            deployment_id=api_snapshot.deployment_id,
-            available_at=api_snapshot.available_at,
-            size=api_snapshot.size,
-            region=api_snapshot.region or "",
-            organization_id=api_snapshot.organization_id or "",
-            project_id=api_snapshot.project_id,
-            messages=api_snapshot.messages or [],
-            api_token=api_token,
-            host=host,
-        )
-
-    @classmethod
     def _from_instance_api_snapshot(
         cls,
         api_snapshot: Any,
@@ -262,12 +222,10 @@ class Snapshot:
             }
             status = status_map.get(api_snapshot.status.value, SnapshotStatus.INVALID)
 
-        # Get region from regional_deployment_id if available, otherwise use empty string
-        region = ""
-        if api_snapshot.regional_deployment_id:
-            # regional_deployment_id typically contains region info, e.g., "region-service-id"
-            # For now, we'll leave it as empty since we don't have a direct mapping
-            region = ""
+        # Get region from regional_deployment_id if available
+        # Note: regional_deployment_id typically contains region info, e.g., "region-service-id"
+        # but we don't have a direct mapping, so we use the region field directly
+        region = api_snapshot.region or ""
         
         return cls(
             id=api_snapshot.id or "",
