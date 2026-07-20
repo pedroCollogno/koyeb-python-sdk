@@ -222,10 +222,15 @@ class Snapshot:
             }
             status = status_map.get(api_snapshot.status.value, SnapshotStatus.INVALID)
 
-        # Get region from regional_deployment_id if available
-        # Note: regional_deployment_id typically contains region info, e.g., "region-service-id"
-        # but we don't have a direct mapping, so we use the region field directly
-        region = api_snapshot.region or ""
+        # Get region from the snapshot
+        # Try region field first, then regional_deployment_id if available
+        region = ""
+        if hasattr(api_snapshot, 'region') and api_snapshot.region:
+            region = api_snapshot.region
+        elif hasattr(api_snapshot, 'regional_deployment_id') and api_snapshot.regional_deployment_id:
+            # regional_deployment_id typically contains region info, e.g., "region-service-id"
+            # For now, we don't have a direct mapping, so leave as empty
+            region = ""
         
         return cls(
             id=api_snapshot.id or "",
