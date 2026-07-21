@@ -19,6 +19,7 @@ from .exec import (
 )
 from .filesystem import FileInfo, SandboxFilesystem
 from .sandbox import AsyncSandbox, ExposedPort, ProcessInfo, Sandbox
+from .snapshot import DeclarativeSnapshot, Snapshot, SnapshotStatus, SnapshotType
 from .utils import (
     EgressPolicyError,
     SandboxDeploymentError,
@@ -47,4 +48,8 @@ __all__ = [
     "SandboxCommandError",
     "ExposedPort",
     "ProcessInfo",
+    "Snapshot",
+    "SnapshotType",
+    "SnapshotStatus",
+    "DeclarativeSnapshot",
 ]
