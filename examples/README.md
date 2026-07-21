@@ -35,6 +35,11 @@ uv run python examples/01_create_sandbox.py
 - **19_entrypoint_and_command.py** - Create sandboxes with custom entrypoint and command
 - **20_config_files.py** - Config files with secrets and interpolation
 - **21_egress_policy.py** - Block outbound network access or restrict it to an allowlist
+- **22_websockets.py** - WebSocket connections
+- **23_snapshot_and_spawn.py** - Create a sandbox, take a snapshot, and spawn from it
+- **24_declarative_snapshot_builder.py** - Declarative snapshot building
+- **25_full_snapshot_and_spawn.py** - Full snapshots with process state preservation
+- **26_snapshot_boot_benchmark.py** - Benchmark snapshot boot times (sync)
 
 ## Basic Usage
 
